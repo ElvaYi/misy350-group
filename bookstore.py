@@ -66,7 +66,7 @@ def edit_author(id):
     if request.method == 'POST':
         # update data based on the form data
         author.name = request.form['name']
-        artist.intro = request.form['intro']
+        author.intro = request.form['intro']
         # update the database
         db.session.commit()
         return redirect(url_for('show_all_authors'))
