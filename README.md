@@ -1,5 +1,6 @@
 # misy350-group
 group work for misy350 class
+Group Member: Qian Yi, Sean Bates, Yue Feng
 
 Our team project aims to create an application for a book store.
 In our application, there will be a book database storing information about books
@@ -12,6 +13,3 @@ Book Name, Year, Author, Summary and Actions.
 
 In our author table, there will be 4 columns: Author number # (this is the primary key for authors),
 Name, Author introduction and actions.  
-
-
-In the README.md file, add a short description of your team project, in which you need to develop a similar web application as the demo SongBase app, such as movie database, book database, etc. You need to include the database design, such as how many tables, what the columns in each table, and what are the relationships among tables (you must have at least one one-to-many relationship between two tables). No need to code the database part for this assignment.
