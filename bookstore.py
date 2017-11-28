@@ -12,21 +12,21 @@ db = SQLAlchemy(app)
 
 
 # define database tables
-class Artist(db.Model):
-    __tablename__ = 'artists'
+class Author(db.Model):
+    __tablename__ = 'authors'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64))
-    about = db.Column(db.Text)
-    songs = db.relationship('Song', backref='artist')
+    intro = db.Column(db.Text)
+    books = db.relationship('Book', backref='author')
 
 
-class Song(db.Model):
-    __tablename__ = 'songs'
+class Book(db.Model):
+    __tablename__ = 'books'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(256))
     year = db.Column(db.Integer)
-    lyrics = db.Column(db.Text)
-    artist_id = db.Column(db.Integer, db.ForeignKey('artists.id'))
+    summary = db.Column(db.String(256))
+    author_id = db.Column(db.Integer, db.ForeignKey('authors.id'))
 
 
 @app.route('/')
@@ -36,124 +36,93 @@ def index():
     return render_template('index.html')
 
 
-@app.route('/artists')
-def show_all_artists():
-    artists = Artist.query.all()
-    return render_template('artist-all.html', artists=artists)
+@app.route('/authors')
+def show_all_authors():
+    authors = Author.query.all()
+    return render_template('author-all.html', authors=authors)
 
 
-@app.route('/artist/add', methods=['GET', 'POST'])
-def add_artists():
+@app.route('/author/add', methods=['GET', 'POST'])
+def add_authors():
     if request.method == 'GET':
-        return render_template('artist-add.html')
+        return render_template('author-add.html')
     if request.method == 'POST':
         # get data from the form
         name = request.form['name']
-        about = request.form['about']
+        intro = request.form['intro']
 
         # insert the data into the database
-        artist = Artist(name=name, about=about)
-        db.session.add(artist)
+        author = Author(name=name, intro=intro)
+        db.session.add(author)
         db.session.commit()
-        return redirect(url_for('show_all_artists'))
+        return redirect(url_for('show_all_authors'))
 
 
-@app.route('/artist/edit/<int:id>', methods=['GET', 'POST'])
-def edit_artist(id):
-    artist = Artist.query.filter_by(id=id).first()
+@app.route('/author/edit/<int:id>', methods=['GET', 'POST'])
+def edit_author(id):
+    author = Author.query.filter_by(id=id).first()
     if request.method == 'GET':
-        return render_template('artist-edit.html', artist=artist)
+        return render_template('author-edit.html', author=author)
     if request.method == 'POST':
         # update data based on the form data
-        artist.name = request.form['name']
-        artist.about = request.form['about']
+        author.name = request.form['name']
+        artist.intro = request.form['intro']
         # update the database
         db.session.commit()
-        return redirect(url_for('show_all_artists'))
+        return redirect(url_for('show_all_authors'))
 
 
-# song-all.html adds song id to the edit button using a hidden input
-@app.route('/songs')
-def show_all_songs():
-    songs = Song.query.all()
-    return render_template('song-all.html', songs=songs)
+# book-all.html adds song id to the edit button using a hidden input
+@app.route('/books')
+def show_all_books():
+    books = Book.query.all()
+    return render_template('book-all.html', books=books)
 
 
-@app.route('/song/add', methods=['GET', 'POST'])
-def add_songs():
+@app.route('/book/add', methods=['GET', 'POST'])
+def add_books():
     if request.method == 'GET':
-        artists = Artist.query.all()
-        return render_template('song-add.html', artists=artists)
+        authors = Author.query.all()
+        return render_template('book-add.html', authors=authors)
     if request.method == 'POST':
         # get data from the form
         name = request.form['name']
         year = request.form['year']
-        lyrics = request.form['lyrics']
-        artist_name = request.form['artist']
-        artist = Artist.query.filter_by(name=artist_name).first()
-        song = Song(name=name, year=year, lyrics=lyrics, artist=artist)
+        summary = request.form['summary']
+        author_name = request.form['author']
+        author = Author.query.filter_by(name=author_name).first()
+        book = Book(name=name, year=year, summary=summary, author=author)
 
         # insert the data into the database
-        db.session.add(song)
+        db.session.add(book)
         db.session.commit()
-        return redirect(url_for('show_all_songs'))
+        return redirect(url_for('show_all_books'))
 
 
-@app.route('/song/edit/<int:id>', methods=['GET', 'POST'])
-def edit_song(id):
-    song = Song.query.filter_by(id=id).first()
-    artists = Artist.query.all()
+@app.route('/book/edit/<int:id>', methods=['GET', 'POST'])
+def edit_book(id):
+    book = Book.query.filter_by(id=id).first()
+    authors = Author.query.all()
     if request.method == 'GET':
-        return render_template('song-edit.html', song=song, artists=artists)
+        return render_template('book-edit.html', book=book, authors=authors)
     if request.method == 'POST':
         # update data based on the form data
-        song.name = request.form['name']
-        song.year = request.form['year']
-        song.lyrics = request.form['lyrics']
-        artist_name = request.form['artist']
-        artist = Artist.query.filter_by(name=artist_name).first()
-        song.artist = artist
+        book.name = request.form['name']
+        book.year = request.form['year']
+        book.summary = request.form['summary']
+        author_name = request.form['author']
+        author = Author.query.filter_by(name=author_name).first()
+        book.author = author
         # update the database
         db.session.commit()
-        return redirect(url_for('show_all_songs'))
+        return redirect(url_for('show_all_books'))
 
 
-@app.route('/about')
-def about():
-    return render_template('about.html')
+@app.route('/members')
+def members():
+    return render_template('members.html')
 
 
-@app.route('/users')
-def show_all_users():
-    return render_template('user-all.html')
-
-
-@app.route('/form-demo', methods=['GET', 'POST'])
-def form_demo():
-    # how to get form data is different for GET vs. POST
-    if request.method == 'GET':
-        first_name = request.args.get('first_name')
-        if first_name:
-            return render_template('form-demo.html', first_name=first_name)
-        else:
-            return render_template('form-demo.html', first_name=session.get('first_name'))
-    if request.method == 'POST':
-        session['first_name'] = request.form['first_name']
-        # return render_template('form-demo.html', first_name=first_name)
-        return redirect(url_for('form_demo'))
-
-
-@app.route('/user/<string:name>/')
-def get_user_name(name):
-    # return "hello " + name
-    # return "Hello %s, this is %s" % (name, 'administrator')
-    return render_template('user.html', name=name)
-
-
-@app.route('/song/<int:id>/')
-def get_song_id(id):
-    # return "This song's ID is " + str(id)
-    return "Hi, this is %s and the song's id is %d" % ('administrator', id)
 
 
 # https://goo.gl/Pc39w8 explains the following line
