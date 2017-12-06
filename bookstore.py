@@ -33,13 +33,13 @@ class Book(db.Model):
 def index():
     # return HTML
     # return "<h1>this is the index page!<h1>"
-    return render_template('index.html')
+    return render_template('index.html', page_name='home')
 
 
 @app.route('/authors')
 def show_all_authors():
     authors = Author.query.all()
-    return render_template('author-all.html', authors=authors)
+    return render_template('author-all.html', authors=authors, page_name='authors')
 
 
 @app.route('/author/add', methods=['GET', 'POST'])
@@ -89,7 +89,7 @@ def delete_author(id):
 @app.route('/books')
 def show_all_books():
     books = Book.query.all()
-    return render_template('book-all.html', books=books)
+    return render_template('book-all.html', books=books, page_name='books')
 
 
 @app.route('/book/add', methods=['GET', 'POST'])
@@ -146,7 +146,7 @@ def delete_book(id):
 
 @app.route('/members')
 def members():
-    return render_template('members.html')
+    return render_template('members.html', page_name='members')
 
 
 
