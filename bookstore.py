@@ -17,7 +17,7 @@ class Author(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64))
     intro = db.Column(db.Text)
-    books = db.relationship('Book', backref='author')
+    books = db.relationship('Book', backref='author', cascade="delete")
 
 
 class Book(db.Model):
@@ -72,6 +72,19 @@ def edit_author(id):
         return redirect(url_for('show_all_authors'))
 
 
+@app.route('/author/delete/<int:id>', methods=['GET', 'POST'])
+def delete_author(id):
+    author = Author.query.filter_by(id=id).first()
+    if request.method == 'GET':
+        return render_template('author-delete.html', author=author)
+    if request.method == 'POST':
+        # delete the author by id
+        # all related books are deleted as well
+        db.session.delete(author)
+        db.session.commit()
+        return redirect(url_for('show_all_authors'))
+
+
 # book-all.html adds song id to the edit button using a hidden input
 @app.route('/books')
 def show_all_books():
@@ -114,6 +127,19 @@ def edit_book(id):
         author = Author.query.filter_by(name=author_name).first()
         book.author = author
         # update the database
+        db.session.commit()
+        return redirect(url_for('show_all_books'))
+
+
+@app.route('/book/delete/<int:id>', methods=['GET', 'POST'])
+def delete_book(id):
+    book = Book.query.filter_by(id=id).first()
+    if request.method == 'GET':
+        return render_template('book-delete.html', book=book)
+    if request.method == 'POST':
+        # delete the artist by id
+        # all related songs are deleted as well
+        db.session.delete(book)
         db.session.commit()
         return redirect(url_for('show_all_books'))
 
