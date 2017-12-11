@@ -1,5 +1,5 @@
 import os
-from flask import Flask, session, render_template, request, flash, redirect, url_for
+from flask import Flask, session, render_template, request, flash, redirect, url_for, jsonify
 from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
@@ -85,6 +85,14 @@ def delete_author(id):
         return redirect(url_for('show_all_authors'))
 
 
+@app.route('/api/author/<int:id>', methods=['DELETE'])
+def delete_ajax_author(id):
+    author = Author.query.get_or_404(id)
+    db.session.delete(author)
+    db.session.commit()
+    return jsonify({"id": str(author.id), "name": author.name})
+
+
 # book-all.html adds song id to the edit button using a hidden input
 @app.route('/books')
 def show_all_books():
@@ -144,11 +152,17 @@ def delete_book(id):
         return redirect(url_for('show_all_books'))
 
 
+@app.route('/api/book/<int:id>', methods=['DELETE'])
+def delete_ajax_book(id):
+    book = Book.query.get_or_404(id)
+    db.session.delete(book)
+    db.session.commit()
+    return jsonify({"id": str(book.id), "name": book.name})
+
+
 @app.route('/members')
 def members():
     return render_template('members.html', page_name='members')
-
-
 
 
 # https://goo.gl/Pc39w8 explains the following line
